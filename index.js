@@ -1,45 +1,37 @@
-const mongoose = require("mongoose");
+const express = require("express");
+require("./config");
+const Product = require("./product");
+const app = express();
 
-mongoose.connect("mongodb://localhost:27017/myTestDB");
-const productSchema = new mongoose.Schema({
-  name: String,
-  designation: String,
+const dotenv = require("dotenv");
+const path = require("path");
+
+dotenv.config({ path: path.join(__dirname, "./.env") });
+const { MONGODB_URI, PORT } = process.env;
+
+app.use(express.json());
+
+app.post("/create", async (req, resp) => {
+  let data = new Product(req.body);
+  const result = await data.save();
+  resp.send(result);
 });
 
-const saveInDB = async () => {
-  const Product = mongoose.model("mytestcollections", productSchema);
-  let data = new Product({
-    name: "ABS",
-    designation: "sss",
-  });
-  const result = await data.save();
-  console.log(result);
-};
+app.get("/list", async (req, resp) => {
+  let data = await Product.find();
+  resp.send(data);
+});
 
-const updateInDB = async () => {
-  const Product = mongoose.model("mytestcollections", productSchema);
-  let data = await Product.updateOne(
-    { name: "ABS" },
-    {
-      $set: { price: 550, name: "XYZ" },
-    }
-  );
-  console.log(data);
-};
+app.delete("/delete/:_id", async (req, resp) => {
+  console.log(req.params);
+  let data = await Product.deleteOne(req.params);
+  resp.send(data);
+});
 
-const deleteInDB = async () => {
-  const Product = mongoose.model("mytestcollections", productSchema);
-  let data = await Product.deleteOne({ name: "XYZ" });
-  console.log(data);
-};
-const findInDB = async () => {
-  const Product = mongoose.model("mytestcollections", productSchema);
-  let data = await Product.find({ name: "Asim" });
-  console.log(data);
-};
+app.put("/update/:_id", async (req, resp) => {
+  console.log(req.params);
+  let data = await Product.updateOne(req.params, { $set: req.body });
+  resp.send(data);
+});
 
-// findInDB();
-// saveInDB();
-// updateInDB();
-// deleteInDB();
-// findInDB();
+app.listen(PORT);
