@@ -11,6 +11,14 @@ const { MONGODB_URI, PORT } = process.env;
 
 app.use(express.json());
 
+const os = require("os");
+console.log("os architecture", os.arch());
+console.log("free memory", os.freemem() / (1024 * 1024 * 1024));
+console.log("total memory", os.totalmem());
+console.log("Hostname", os.hostname());
+console.log("Platform", os.platform());
+console.log("User Info", os.userInfo());
+
 const multer = require("multer");
 
 const upload = multer({
