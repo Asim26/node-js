@@ -1,7 +1,10 @@
 const express = require("express");
+const cors = require("cors");
 require("./config");
 const Product = require("./product");
 const app = express();
+
+app.use(cors());
 
 const dotenv = require("dotenv");
 const path = require("path");
@@ -12,12 +15,12 @@ const { MONGODB_URI, PORT } = process.env;
 app.use(express.json());
 
 const os = require("os");
-console.log("os architecture", os.arch());
-console.log("free memory", os.freemem() / (1024 * 1024 * 1024));
-console.log("total memory", os.totalmem());
-console.log("Hostname", os.hostname());
-console.log("Platform", os.platform());
-console.log("User Info", os.userInfo());
+// console.log("os architecture", os.arch());
+// console.log("free memory", os.freemem() / (1024 * 1024 * 1024));
+// console.log("total memory", os.totalmem());
+// console.log("Hostname", os.hostname());
+// console.log("Platform", os.platform());
+// console.log("User Info", os.userInfo());
 
 const multer = require("multer");
 
@@ -46,6 +49,12 @@ app.get("/list", async (req, resp) => {
 app.delete("/delete/:_id", async (req, resp) => {
   console.log(req.params);
   let data = await Product.deleteOne(req.params);
+  resp.send(data);
+});
+
+app.get("/show/:_id", async (req, resp) => {
+  console.log(req.params);
+  let data = await Product.find(req.params);
   resp.send(data);
 });
 
